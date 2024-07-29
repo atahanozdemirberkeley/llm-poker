@@ -1,11 +1,16 @@
 import React from "react";
+import Card from "./Card";
 
-const Player = () => {
+const Player = ({ cards, name }) => {
   return (
-    <div className="player">
-      <div className="player-cards">{/* Player cards will go here */}</div>
-      <div className="player-info">Player</div>
-    </div>
+    <>
+      <div className="player-cards">
+        {cards.map((card, index) => (
+          <Card key={index} rank={card.rank} suit={card.suit} faceUp={true} />
+        ))}
+      </div>
+      <div className="player-info">{name}</div>
+    </>
   );
 };
 

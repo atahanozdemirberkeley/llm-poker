@@ -6,6 +6,8 @@ const Controls = ({
   onRaise,
   onCheck,
   onFold,
+  onPeek,
+  hasPeeked,
   currentBet,
   pot,
 }) => {
@@ -41,7 +43,7 @@ const Controls = ({
     <div className="controls">
       {!showRaiseOptions ? (
         <>
-          <button className="control-button" onClick={onNextHand}>
+          <button className="control-button next-hand" onClick={onNextHand}>
             NEXT HAND
           </button>
           <button className="control-button" onClick={() => onCall(currentBet)}>
@@ -55,6 +57,13 @@ const Controls = ({
           </button>
           <button className="control-button fold-button" onClick={onFold}>
             FOLD
+          </button>
+          <button
+            className={`control-button ${hasPeeked ? "peeked" : "notpeeked"}`}
+            onClick={onPeek}
+            disabled={hasPeeked}
+          >
+            PEEK
           </button>
         </>
       ) : (

@@ -1,11 +1,21 @@
 import React from "react";
+import Card from "./Card";
 
-const LLMOpponent = () => {
+const LLMOpponent = ({ cards }) => {
   return (
-    <div className="llm-opponent">
-      <div className="opponent-cards">{/* Opponent cards will go here */}</div>
-      <div className="opponent-info">LLM Opponent</div>
-    </div>
+    <>
+      <div className="opponent-cards">
+        {cards.map((card, index) => (
+          <Card
+            key={index}
+            rank={card.rank}
+            suit={card.suit}
+            faceUp={card.faceUp}
+          />
+        ))}
+      </div>
+      <div className="opponent-info">PokerBench</div>
+    </>
   );
 };
 

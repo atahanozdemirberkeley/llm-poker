@@ -37,24 +37,44 @@ h1 {
   border-radius: 50% / 50%;
   position: relative;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5) inset, 0 0 20px rgba(0, 0, 0, 0.3);
-  margin-bottom: 30px;
+  margin: 60px auto;
 }
 
 .player-area,
 .opponent-area {
   position: absolute;
-  color: white;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160px;
 }
 
 .player-area {
-  bottom: 30px;
+  bottom: -50px;
 }
 
 .opponent-area {
-  top: 30px;
+  top: -50px;
+}
+
+.player-info,
+.opponent-info {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #b0adad;
+  font-size: 16px;
+  text-shadow: 1px 1px 2px black;
+}
+
+.player-info {
+  bottom: -20px;
+}
+
+.opponent-info {
+  top: -20px;
 }
 
 .game-info {
@@ -116,6 +136,27 @@ h1 {
 .control-button:hover {
   background-color: #38af6b;
   color: white;
+}
+
+.next-hand {
+  padding: 15px 30px;
+  font-size: 18px;
+  border: 2px solid #388baf;
+  border-radius: 5px;
+  background-color: #242223;
+  color: #388baf;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.next-hand:hover {
+  padding: 15px 30px;
+  font-size: 18px;
+  border: 2px solid #388baf;
+  border-radius: 5px;
+  background-color: #388baf;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .fold-button {
@@ -191,4 +232,72 @@ h1 {
   background-color: #38af6b;
   color: white;
   border-color: #38af6b;
+}
+
+.card {
+  width: 70px;
+  height: 100px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 0 5px;
+  display: inline-block;
+  background-size: cover;
+  background-position: center;
+}
+
+.player-cards,
+.opponent-cards {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.community-cards {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 1200px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .game-info,
+  .game-log {
+    width: 80%;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+
+  .poker-table {
+    width: 90%;
+    height: 300px;
+  }
+}
+
+.control-button.notpeeked {
+  background-color: #242223;
+  border-color: white;
+  color: white;
+}
+
+.control-button.notpeeked:hover {
+  background-color: white;
+  color: #242223;
+}
+
+.control-button.peeked {
+  background-color: #242223;
+  border-color: #696969;
+  color: #696969;
+}
+
+.control-button.peeked:hover {
+  background-color: #242223;
 }
