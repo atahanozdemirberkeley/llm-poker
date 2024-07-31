@@ -1,7 +1,7 @@
 import React from "react";
 import backCard from "../images/2B.svg";
-import twoC from "../images/2C.svg";
 import threeD from "../images/3D.svg";
+import twoC from "../images/2C.svg";
 
 const Card = ({ rank, suit, faceUp }) => {
   if (faceUp === false) {
