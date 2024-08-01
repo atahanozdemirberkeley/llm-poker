@@ -4,6 +4,7 @@ import Controls from "./Controls";
 import GameInfo from "./GameInfo";
 import GameLog from "./GameLog";
 import { dealCards } from "./deckUtils";
+import UsernameModal from "./UsernameModal";
 
 const App = () => {
   const [gameState, setGameState] = useState({
@@ -11,11 +12,16 @@ const App = () => {
     currentBet: 20,
     playerStack: 1000,
     opponentStack: 1000,
+    pot: 0,
+    playerBet: 0,
+    opponentBet: 0,
     playerCards: [],
     opponentCards: [],
-    communityCards: [],
     hasPeeked: false,
+    communityCards: [],
   });
+
+  const [username, setUsername] = useState("");
 
   const [logs, setLogs] = useState([]);
 
@@ -34,9 +40,15 @@ const App = () => {
       opponentCards: players[1].map((card) => ({ ...card, faceUp: false })),
       communityCards: communityCards.map((card) => ({ ...card, faceUp: true })),
       currentBet: 20, // Big blind amount
+      playerBet: 10, // Small blind
+      opponentBet: 20, // Big blind
       hasPeeked: false,
     }));
     addLog("New hand dealt");
+  };
+
+  const handleUsernameSubmit = (name) => {
+    setUsername(name);
   };
 
   const addLog = (message) => {
@@ -47,6 +59,7 @@ const App = () => {
     setGameState((prevState) => ({
       ...prevState,
       pot: prevState.pot + amount,
+      playerBet: amount,
       playerStack: prevState.playerStack - amount,
     }));
     addLog(`Called ${amount}`);
@@ -57,6 +70,7 @@ const App = () => {
       ...prevState,
       pot: prevState.pot + amount,
       playerStack: prevState.playerStack - amount,
+      playerBet: prevState.playerBet + amount,
       currentBet: amount,
     }));
     addLog(`Raised to ${amount}`);
@@ -94,7 +108,8 @@ const App = () => {
   };
 
   return (
-    <div className="app">
+    <div className={`app ${!username ? "blurred" : ""}`}>
+      {!username && <UsernameModal onSubmit={handleUsernameSubmit} />}
       <h1>PokerBench: Play Heads Up Poker with an LLM!</h1>
       <div className="game-container">
         <GameInfo
@@ -107,6 +122,10 @@ const App = () => {
             playerCards={gameState.playerCards}
             opponentCards={gameState.opponentCards}
             communityCards={gameState.communityCards}
+            pot={gameState.pot}
+            playerBet={gameState.playerBet}
+            opponentBet={gameState.opponentBet}
+            playerName={username || "Player"}
           />
           <Controls
             onCall={handleCall}
