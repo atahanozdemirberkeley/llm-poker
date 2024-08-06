@@ -1,4 +1,4 @@
-const suits = ["hearts", "diamonds", "clubs", "spades"];
+const suits = ["h", "d", "c", "s"];
 const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"];
 
 export const createDeck = () => {

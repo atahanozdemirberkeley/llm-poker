@@ -17,7 +17,7 @@ const PokerTable = ({
       <div className="opponent-area">
         <LLMOpponent cards={opponentCards} />
         <div className="bet-info opponent-bet">
-          {opponentBet > 0 && opponentBet}
+          {opponentBet >= 0 && opponentBet}
         </div>
       </div>
       <div className="pot-display">
@@ -25,12 +25,12 @@ const PokerTable = ({
       </div>
       <div className="community-cards">
         {communityCards.map((card, index) => (
-          <Card key={index} rank={card.rank} suit={card.suit} faceUp={true} />
+          <Card key={index} rank={card[0]} suit={card[1]} faceUp={true} />
         ))}
       </div>
       <div className="player-area">
         <Player cards={playerCards} name={playerName} />
-        <div className="bet-info player-bet">{playerBet > 0 && playerBet}</div>
+        <div className="bet-info player-bet">{playerBet >= 0 && playerBet}</div>
       </div>
     </div>
   );

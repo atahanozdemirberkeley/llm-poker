@@ -6,10 +6,11 @@ const Controls = ({
   onRaise,
   onCheck,
   onFold,
-  onPeek,
-  hasPeeked,
   currentBet,
-  pot,
+  isPlayerTurn,
+  isGameOver,
+  playerStack,
+  isGameStarted,
 }) => {
   const [showRaiseOptions, setShowRaiseOptions] = useState(false);
   const [raiseAmount, setRaiseAmount] = useState(currentBet * 2);
@@ -33,40 +34,58 @@ const Controls = ({
 
   const raiseOptions = [
     { label: "MIN RAISE", value: currentBet * 2 },
-    { label: "1/2 POT", value: pot / 2 },
-    { label: "3/4 POT", value: pot * 0.75 },
-    { label: "POT", value: pot },
-    { label: "ALL IN", value: 1000 }, // Assuming 1000 is the max stack size
+    { label: "1/2 POT", value: Math.floor(currentBet * 1.5) },
+    { label: "POT", value: currentBet * 2 },
+    { label: "ALL IN", value: playerStack },
   ];
 
   return (
     <div className="controls">
-      {!showRaiseOptions ? (
-        <>
-          <button className="control-button next-hand" onClick={onNextHand}>
-            NEXT HAND
-          </button>
-          <button className="control-button" onClick={() => onCall(currentBet)}>
-            CALL {currentBet}
-          </button>
-          <button className="control-button" onClick={handleRaiseClick}>
-            RAISE
-          </button>
-          <button className="control-button" onClick={onCheck}>
-            CHECK
-          </button>
-          <button className="control-button fold-button" onClick={onFold}>
-            FOLD
-          </button>
-          <button
-            className={`control-button ${hasPeeked ? "peeked" : "notpeeked"}`}
-            onClick={onPeek}
-            disabled={hasPeeked}
-          >
-            PEEK
-          </button>
-        </>
-      ) : (
+      <button
+        className="control-button next-hand"
+        onClick={onNextHand}
+        disabled={isGameStarted && !isGameOver}
+      >
+        {isGameStarted ? "NEXT HAND" : "START GAME"}
+      </button>
+
+      <button
+        className="control-button"
+        onClick={onCall}
+        disabled={!isGameStarted || !isPlayerTurn || isGameOver}
+      >
+        CALL {currentBet}
+      </button>
+
+      <button
+        className="control-button"
+        onClick={handleRaiseClick}
+        disabled={!isGameStarted || !isPlayerTurn || isGameOver}
+      >
+        RAISE
+      </button>
+
+      <button
+        className="control-button"
+        onClick={onCheck}
+        disabled={!isGameStarted || !isPlayerTurn || isGameOver}
+      >
+        CHECK
+      </button>
+
+      <button
+        className="control-button fold-button"
+        onClick={onFold}
+        disabled={!isGameStarted || !isPlayerTurn || isGameOver}
+      >
+        FOLD
+      </button>
+
+      {!isPlayerTurn && isGameStarted && !isGameOver && (
+        <div>Waiting for opponent...</div>
+      )}
+
+      {showRaiseOptions && (
         <div className="raise-options">
           <div className="raise-amount">
             <span>Your bet</span>
@@ -86,7 +105,7 @@ const Controls = ({
           <input
             type="range"
             min={currentBet * 2}
-            max={1000}
+            max={playerStack}
             value={raiseAmount}
             onChange={handleSliderChange}
             className="raise-slider"

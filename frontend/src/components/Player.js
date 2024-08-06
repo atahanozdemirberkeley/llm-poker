@@ -6,7 +6,7 @@ const Player = ({ cards, name }) => {
     <>
       <div className="player-cards">
         {cards.map((card, index) => (
-          <Card key={index} rank={card.rank} suit={card.suit} faceUp={true} />
+          <Card key={index} rank={card[0]} suit={card[1]} faceUp={true} />
         ))}
       </div>
       <div className="player-info">{name}</div>
