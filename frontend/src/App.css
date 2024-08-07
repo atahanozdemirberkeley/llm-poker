@@ -76,6 +76,21 @@ h1 {
   font-weight: bold;
 }
 
+.dealer-button {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: purple;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  top: 50%;
+  left: -40px;
+}
+
 .opponent-bet {
   top: 110%;
   left: 50%;
@@ -327,6 +342,17 @@ h1 {
     width: 90%;
     height: 300px;
   }
+}
+
+.control-button:disabled {
+  background-color: #242223;
+  border-color: #696969;
+  color: #696969;
+  cursor: not-allowed;
+}
+
+.control-button:disabled:hover {
+  background-color: #242223;
 }
 
 .control-button.notpeeked {

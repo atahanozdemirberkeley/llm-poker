@@ -11,18 +11,45 @@ const PokerTable = ({
   playerBet,
   opponentBet,
   playerName,
+  isGameStarted,
+  playerTurn,
+  buttonloc,
+  stage,
 }) => {
+  console.log("PokerTable props:", {
+    playerCards,
+    opponentCards,
+    communityCards,
+    pot,
+    playerBet,
+    opponentBet,
+    playerName,
+    isGameStarted,
+    playerTurn,
+    buttonloc,
+    stage,
+  });
   return (
     <div className="poker-table">
       <div className="opponent-area">
         <LLMOpponent cards={opponentCards} />
-        <div className="bet-info opponent-bet">
-          {opponentBet >= 0 && opponentBet}
-        </div>
+        {isGameStarted && (
+          <>
+            <div className="bet-info opponent-bet">
+              {opponentBet > 0 && opponentBet}
+            </div>
+            {buttonloc === 1 && <div className="dealer-button">D</div>}
+          </>
+        )}
       </div>
-      <div className="pot-display">
-        <div className="pot-circle">{pot}</div>
-      </div>
+      {isGameStarted && (
+        <>
+          <div className="pot-display">
+            <div className="pot-circle">{pot}</div>
+          </div>
+        </>
+      )}
+
       <div className="community-cards">
         {communityCards.map((card, index) => (
           <Card key={index} rank={card[0]} suit={card[1]} faceUp={true} />
@@ -30,7 +57,14 @@ const PokerTable = ({
       </div>
       <div className="player-area">
         <Player cards={playerCards} name={playerName} />
-        <div className="bet-info player-bet">{playerBet >= 0 && playerBet}</div>
+        {isGameStarted && (
+          <>
+            <div className="bet-info player-bet">
+              {playerBet > 0 && playerBet}
+            </div>
+            {buttonloc === 0 && <div className="dealer-button">D</div>}
+          </>
+        )}
       </div>
     </div>
   );
