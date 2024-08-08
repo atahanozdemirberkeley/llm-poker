@@ -141,7 +141,7 @@ h1 {
 }
 
 .game-info {
-  width: 300px;
+  width: 320px;
   padding: 10px;
   background-color: #333;
   border-radius: 10px;
@@ -150,11 +150,11 @@ h1 {
 
 .game-info p {
   margin: 10px 0;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .game-log {
-  width: 200px;
+  width: 300px;
   padding: 20px;
   background-color: #333;
   border-radius: 10px;

@@ -6,6 +6,7 @@ from texasholdem.game.player_state import PlayerState
 from texasholdem.card.card import Card
 from texasholdem.evaluator.evaluator import evaluate
 import random
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -21,7 +22,6 @@ def create_new_game():
     global game
     game = TexasHoldEm(buyin=BUY_IN, small_blind=SMALL_BLIND, big_blind=BIG_BLIND, max_players=MAX_PLAYERS)
     game.start_hand()
-    handle_ai_actions()  # Handle initial AI actions if necessary
 
 def ai_action():
     moves = game.get_available_moves()
@@ -29,26 +29,19 @@ def ai_action():
         return ActionType.CHECK, None
     elif ActionType.CALL in moves.action_types:
         return ActionType.CALL, None
+    elif ActionType.RAISE in moves.action_types:
+        # Add some basic raising logic
+        if random.random() < 0.3:  # 30% chance to raise
+            return ActionType.RAISE, game.min_raise()
     elif ActionType.FOLD in moves.action_types:
         return ActionType.FOLD, None
-    else:
-        return ActionType.FOLD, None
-
-def handle_ai_actions():
-    ai_actions = []
-    while game.is_hand_running() and game.current_player == 1:  # Assuming AI is player 1
-        ai_action_type, ai_amount = ai_action()
-        game.take_action(ai_action_type, total=ai_amount)
-        ai_actions.append({"action": ai_action_type.name, "amount": ai_amount})
-    return ai_actions
+    return ActionType.FOLD, None  # Default action
 
 @app.route('/api/start_game', methods=['POST'])
 def start_game():
     create_new_game()
     game_state = get_game_state()
-    ai_actions = handle_ai_actions()
-    
-    return jsonify({"gameState": game_state, "aiActions": ai_actions})
+    return jsonify({"gameState": game_state})
 
 @app.route('/api/player_action', methods=['POST'])
 def player_action():
@@ -67,7 +60,6 @@ def player_action():
         action_type = ActionType[action.upper()]
         game.take_action(action_type, total=amount)
         
-        ai_actions = handle_ai_actions()
         game_state = get_game_state()
         winner = None
         pot = None
@@ -76,8 +68,7 @@ def player_action():
             winner, pot = evaluate_winner()
         
         response = {
-            "gameState": game_state, 
-            "aiActions": ai_actions,
+            "gameState": game_state,
             "winner": winner,
             "pot": pot
         }
@@ -85,6 +76,39 @@ def player_action():
         return jsonify(response)
     except Exception as e:
         print(f"Error in player_action: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/ai_action', methods=['GET'])
+def get_ai_action():
+    try:
+        if not game or not game.is_game_running():
+            return jsonify({"error": "Game not started"}), 400
+
+        if game.current_player != 1:  # Assuming AI is player 1
+            return jsonify({"error": "Not AI's turn"}), 400
+
+        time.sleep(2)  # 2-second delay for AI "thinking"
+
+        action_type, amount = ai_action()
+        game.take_action(action_type, total=amount)
+
+        game_state = get_game_state()
+        winner = None
+        pot = None
+        
+        if not game.is_hand_running():
+            winner, pot = evaluate_winner()
+        
+        response = {
+            "gameState": game_state,
+            "aiAction": {"action": action_type.name, "amount": amount},
+            "winner": winner,
+            "pot": pot
+        }
+        print("Sending AI action response:", response)
+        return jsonify(response)
+    except Exception as e:
+        print(f"Error in ai_action: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/get_game_state', methods=['GET'])
@@ -112,7 +136,8 @@ def get_game_state():
         "availableMoves": [move.name for move in game.get_available_moves().action_types],
         "raiseRange": [game.min_raise(), player.chips],
         "chipsToCalls": game.pots[0].chips_to_call(0),  # Assuming player is always 0
-        "hasPeeked": False
+        "hasPeeked": False,
+        "isPlayerIN": game.players[0].state == PlayerState.IN
     }
 
 def card_to_string(card: Card):

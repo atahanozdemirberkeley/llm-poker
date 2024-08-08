@@ -15,6 +15,7 @@ const PokerTable = ({
   playerTurn,
   buttonloc,
   stage,
+  isGameOver,
 }) => {
   console.log("PokerTable props:", {
     playerCards,
@@ -28,16 +29,20 @@ const PokerTable = ({
     playerTurn,
     buttonloc,
     stage,
+    isGameOver,
   });
   return (
     <div className="poker-table">
       <div className="opponent-area">
-        <LLMOpponent cards={opponentCards} />
+        <LLMOpponent isGameOver={isGameOver} cards={opponentCards} />
         {isGameStarted && (
           <>
-            <div className="bet-info opponent-bet">
-              {opponentBet > 0 && opponentBet}
-            </div>
+            {opponentBet > 0 && (
+              <>
+                <div className="bet-info opponent-bet">{opponentBet}</div>
+              </>
+            )}
+
             {buttonloc === 1 && <div className="dealer-button">D</div>}
           </>
         )}
@@ -59,9 +64,11 @@ const PokerTable = ({
         <Player cards={playerCards} name={playerName} />
         {isGameStarted && (
           <>
-            <div className="bet-info player-bet">
-              {playerBet > 0 && playerBet}
-            </div>
+            {playerBet > 0 && (
+              <>
+                <div className="bet-info player-bet">{playerBet}</div>
+              </>
+            )}
             {buttonloc === 0 && <div className="dealer-button">D</div>}
           </>
         )}

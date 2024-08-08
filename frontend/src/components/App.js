@@ -13,32 +13,27 @@ const App = () => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [username, setUsername] = useState("");
   const [logs, setLogs] = useState([]);
+  const [isWaitingForAI, setIsWaitingForAI] = useState(false);
 
-  const fetchGameState = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/get_game_state`);
-      setGameState(response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching game state:", error);
-    }
-  };
+  // const fetchGameState = async () => {
+  //   try {
+  //     const response = await axios.get(`${API_BASE_URL}/get_game_state`);
+  //     setGameState(response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error fetching game state:", error);
+  //   }
+  // };
 
   const startNewHand = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/start_game`);
       setIsGameStarted(true);
       setLogs([]);
-      addLog("New hand dealt");
+      addLog("New Hand Dealt");
       setGameState(response.data.gameState);
-      if (response.data.aiActions && response.data.aiActions.length > 0) {
-        response.data.aiActions.forEach((action) => {
-          addLog(
-            `PokerBench ${action.action}${
-              action.amount ? ` to ${action.amount}` : ""
-            }`
-          );
-        });
+      if (!response.data.gameState.playerTurn) {
+        handleAIAction();
       }
     } catch (error) {
       console.error("Error starting new hand:", error);
@@ -59,45 +54,53 @@ const App = () => {
         action,
         amount,
       });
-      addLog(`Player ${action}${amount ? ` to ${amount}` : ""}`);
+      addLog(`You ${action.toUpperCase()}${amount ? ` ${amount}` : ""}`);
       setGameState(response.data.gameState);
-      if (response.data.aiActions && response.data.aiActions.length > 0) {
-        response.data.aiActions.forEach((aiAction) => {
-          addLog(
-            `PokerBench ${aiAction.action}${
-              aiAction.amount ? ` to ${aiAction.amount}` : ""
-            }`
-          );
-        });
 
-        // addLog(
-        //   `PokerBench ${response.data.aiActions[-1].action}${
-        //     response.data.aiActions[-1].amount
-        //       ? ` to ${response.data.aiActions[-1].amount}`
-        //       : ""
-        //   }`
-        // );
-      }
       if (response.data.winner) {
-        if (response.data.winner === "Player") {
-          addLog(`You won ${response.data.pot}!`);
-        } else if (response.data.winner === "AI") {
-          addLog(`PokerBench won ${response.data.pot}.`);
-        } else {
-          addLog(`The pot of ${response.data.pot} is split.`);
-        }
+        handleWinner(response.data.winner, response.data.pot);
+      } else if (!response.data.gameState.playerTurn) {
+        handleAIAction();
       }
     } catch (error) {
       console.error("Error performing action:", error);
     }
   };
 
-  const handlePeek = () => {
-    if (gameState && !gameState.hasPeeked) {
-      setGameState((prevState) => ({
-        ...prevState,
-        hasPeeked: true,
-      }));
+  const handleAIAction = async () => {
+    try {
+      setIsWaitingForAI(true);
+      const response = await axios.get(`${API_BASE_URL}/ai_action`);
+      setGameState(response.data.gameState);
+      if (response.data.aiAction) {
+        addLog(
+          `PokerBench ${response.data.aiAction.action}${
+            response.data.aiAction.amount
+              ? ` to ${response.data.aiAction.amount}`
+              : ""
+          }`
+        );
+      }
+      if (response.data.winner) {
+        handleWinner(response.data.winner, response.data.pot);
+      }
+      if (!response.data.gameState.playerTurn) {
+        handleAIAction();
+      }
+    } catch (error) {
+      console.error("Error getting AI action:", error);
+    } finally {
+      setIsWaitingForAI(false);
+    }
+  };
+
+  const handleWinner = (winner, pot) => {
+    if (winner === "Player") {
+      addLog(`You won ${pot}!`);
+    } else if (winner === "AI") {
+      addLog(`PokerBench won ${pot}.`);
+    } else {
+      addLog(`The pot of ${pot} is split.`);
     }
   };
 
@@ -111,8 +114,8 @@ const App = () => {
       <div className="game-container">
         <GameInfo
           pot={gameState?.pot || 0}
-          playerStack={gameState?.playerStack || 200}
-          opponentStack={gameState?.opponentStack || 200}
+          playerStack={gameState?.playerStack || 0}
+          opponentStack={gameState?.opponentStack || 0}
           stage={gameState?.stage || "PREHAND"}
           whoseTurn={gameState?.playerTurn}
         />
@@ -128,23 +131,26 @@ const App = () => {
             playerName={username}
             isGameStarted={isGameStarted}
             buttonloc={gameState?.buttonloc}
+            isGameOver={gameState?.isGameOver}
           />
           <Controls
             onCall={() => handleAction("call")}
             onRaise={(amount) => handleAction("raise", amount)}
             onCheck={() => handleAction("check")}
             onFold={() => handleAction("fold")}
-            onPeek={handlePeek}
             onNextHand={startNewHand}
             currentBet={gameState?.currentBet || 0}
             isPlayerTurn={gameState?.playerTurn}
             isGameOver={gameState?.isGameOver}
             isGameStarted={isGameStarted}
             playerStack={gameState?.playerStack || 0}
-            hasPeeked={gameState?.hasPeeked}
             availableMoves={gameState?.availableMoves || []}
             raiseRange={gameState?.raiseRange || []}
             chipsToCalls={gameState?.chipsToCalls || 0}
+            isPlayerIN={gameState?.isPlayerIN}
+            isWaitingForAI={isWaitingForAI}
+            playerBet={gameState?.playerBet || 0}
+            pot={gameState?.pot || 0}
           />
         </div>
         <GameLog logs={logs} />

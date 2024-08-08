@@ -9,7 +9,6 @@ const GameInfo = ({ pot, playerStack, opponentStack, stage, WhoseTurn }) => {
       <p>Your Stack: ${playerStack}</p>
       <p>Opponent Stack: ${opponentStack}</p>
       <p>Stage: {stage}</p>
-      <p>Position: {WhoseTurn === true ? "Your Turn" : "PokerBench's Turn"}</p>
     </div>
   );
 };
