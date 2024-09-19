@@ -6,7 +6,7 @@ import GameInfo from "./GameInfo";
 import GameLog from "./GameLog";
 import UsernameModal from "./UsernameModal";
 
-const API_BASE_URL = "http://127.0.0.1:5000/api";
+const API_BASE_URL = "http://127.0.0.1:5001/api";
 
 const App = () => {
   const [gameState, setGameState] = useState(null);
